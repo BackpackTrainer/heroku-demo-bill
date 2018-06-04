@@ -7,22 +7,24 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.ally.invoicify.models.BillingRecord;
 import com.ally.invoicify.models.Invoice;
 import com.ally.invoicify.models.InvoiceLineItem;
+import com.ally.invoicify.models.InvoiceView;
 import com.ally.invoicify.models.User;
 import com.ally.invoicify.repositories.BillingRecordRepository;
 import com.ally.invoicify.repositories.CompanyRepository;
 import com.ally.invoicify.repositories.InvoiceRepository;
 
-@Controller
-@RequestMapping("/invoices")
+@RestController
+@RequestMapping("/api/invoice")
 public class InvoiceController {
 	
 	@Autowired
@@ -34,12 +36,14 @@ public class InvoiceController {
 	@Autowired
 	private CompanyRepository companyRepository;
 	
-	@PostMapping("create")
-	public String createInvoice(Invoice invoice, long clientId, long[] recordIds, Authentication auth) {
+	@PostMapping
+	public Invoice createInvoice(@RequestBody InvoiceView invoiceView, @PathVariable long clientId, Authentication auth) {
 		User creator = (User) auth.getPrincipal();
-		List<BillingRecord> records = recordRepository.findByIdIn(recordIds);
+		List<BillingRecord> records = recordRepository.findByIdIn(invoiceView.getRecordIds());
 		long nowish = Calendar.getInstance().getTimeInMillis();
 		Date now = new Date(nowish);
+		Invoice invoice = new Invoice();
+		invoice.setInvoiceDescription(invoiceView.getInvoiceDescription());
 		
 		List<InvoiceLineItem> items = new ArrayList<InvoiceLineItem>();
 		for (BillingRecord record : records) {
@@ -55,35 +59,14 @@ public class InvoiceController {
 		invoice.setCreatedBy(creator);
 		invoice.setCreatedOn(now);
 		invoice.setCompany(companyRepository.findOne(clientId));
-		invoiceRepository.save(invoice);
 		
-		return "redirect:/invoices";
+		return invoiceRepository.save(invoice);
 	}
 	
-	@PostMapping("new")
-	public ModelAndView step2(long clientId) {
-		ModelAndView mv = new ModelAndView("invoices/step-2");
-		mv.addObject("clientId", clientId);
-		mv.addObject("records", recordRepository.findByClientIdAndLineItemIsNull(clientId));
-		return mv;
-	}
-	
-	@GetMapping("new")
-	public ModelAndView step1() {
-		ModelAndView mv = new ModelAndView("invoices/step-1");
-		mv.addObject("companies", companyRepository.findAll());
-		return mv;
-	}
 
-	@GetMapping("")
-	public ModelAndView list(Authentication auth) {
-		User user = (User) auth.getPrincipal();
-		ModelAndView mv = new ModelAndView("invoices/list");
-		List<Invoice> invoices = invoiceRepository.findAll();
-		mv.addObject("user", user);
-		mv.addObject("showTable", invoices.size() > 0);
-		mv.addObject("invoices", invoices);
-		return mv;
+	@GetMapping
+	public List<Invoice> list() {
+		return invoiceRepository.findAll();
 	}
 	
 }

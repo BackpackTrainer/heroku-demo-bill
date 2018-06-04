@@ -30,14 +30,13 @@ public class RateBasedBillingRecordControllerTests {
 		when(companies.findOne(3l)).thenReturn(company);
 		RateBasedBillingRecordController controller = new RateBasedBillingRecordController(records, companies);
 		
-		ModelAndView actual = controller.create(record,  3l, auth);
+		RateBasedBillingRecord actual = controller.create(record,  3l, auth);
 		
 		verify(auth).getPrincipal();
 		verify(companies).findOne(3l);
 		assertThat(record.getClient()).isSameAs(company);
 		assertThat(record.getCreatedBy()).isSameAs(user);
 		verify(records).save(record);
-		assertThat(actual.getViewName()).isEqualTo("redirect:/billing-records");
 	}
 
 }

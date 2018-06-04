@@ -32,11 +32,10 @@ public class BillingRecordControllerTests {
 		List<BillingRecord> records = new ArrayList<BillingRecord>();
 		when(recordRepository.findAll()).thenReturn(records);
 		
-		ModelAndView actual = controller.list();
+		List<BillingRecord> actual = controller.list();
 		
 		verify(recordRepository).findAll();
-		assertThat(actual.getViewName()).isEqualTo("billing-records/list");
-		assertThat(actual.getModel().get("records")).isSameAs(records);
+		assertThat(actual).isSameAs(records);
 	}
 	
 }

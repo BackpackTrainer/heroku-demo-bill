@@ -17,10 +17,10 @@ import com.ally.invoicify.repositories.UserRepository;
 public class SeedData {
 	
 	public SeedData(BillingRecordRepository recordRepository, CompanyRepository companyRepository, UserRepository usersRepository, PasswordEncoder encoder) {
-		usersRepository.save(new User("curtis", encoder.encode("password"), "TEACHER"));
-		User admin = usersRepository.save(new User("admin", encoder.encode("admin"), "ADMIN"));
-		User clerk = usersRepository.save(new User("clerk", encoder.encode("clerk"), "CLERK"));
-		usersRepository.save(new User("accountant", encoder.encode("accountant"), "ACCOUNTANT"));
+		usersRepository.save(new User("curtis", encoder.encode("password")));
+		User admin = usersRepository.save(new User("admin", encoder.encode("admin")));
+		User clerk = usersRepository.save(new User("clerk", encoder.encode("clerk")));
+		usersRepository.save(new User("accountant", encoder.encode("accountant")));
 		
 		Company ajax = companyRepository.save(new Company("AJAX Ltd."));
 		Company lomax = companyRepository.save(new Company("Lomax Brothers, LLC"));

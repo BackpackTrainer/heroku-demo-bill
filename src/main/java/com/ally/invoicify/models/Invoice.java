@@ -26,7 +26,7 @@ public class Invoice {
 	@ManyToOne
 	private User createdBy;
 	
-	private String invoiceNumber;
+	private String invoiceDescription;
 	
 	@OneToMany(mappedBy="invoice", cascade=CascadeType.ALL)
 	private List<InvoiceLineItem> lineItems;
@@ -63,12 +63,12 @@ public class Invoice {
 		this.createdBy = createdBy;
 	}
 
-	public String getInvoiceNumber() {
-		return invoiceNumber;
+	public String getInvoiceDescription() {
+		return invoiceDescription;
 	}
 
-	public void setInvoiceNumber(String invoiceNumber) {
-		this.invoiceNumber = invoiceNumber;
+	public void setInvoiceDescription(String invoiceDescription) {
+		this.invoiceDescription = invoiceDescription;
 	}
 
 	public List<InvoiceLineItem> getLineItems() {

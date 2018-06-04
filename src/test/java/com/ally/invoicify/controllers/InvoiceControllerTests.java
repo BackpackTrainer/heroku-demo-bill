@@ -23,6 +23,7 @@ import com.ally.invoicify.models.Company;
 import com.ally.invoicify.models.FlatFeeBillingRecord;
 import com.ally.invoicify.models.Invoice;
 import com.ally.invoicify.models.InvoiceLineItem;
+import com.ally.invoicify.models.InvoiceView;
 import com.ally.invoicify.models.RateBasedBillingRecord;
 import com.ally.invoicify.models.User;
 import com.ally.invoicify.repositories.BillingRecordRepository;
@@ -55,27 +56,19 @@ public class InvoiceControllerTests {
 		when(authentication.getPrincipal()).thenReturn(user);
 	}
 
-	@Test
-	public void test_list() {
-		ModelAndView mv = controller.list(authentication);
-		
-		assertThat(mv.getViewName()).isEqualTo("invoices/list");
-		Map<String, Object> model = mv.getModel();
-		assertThat(model.get("user")).isSameAs(user);
-	}
 
 	@Test
 	public void test_createInvoice_converts_billing_record_ids_to_an_invoice() {
 		Company company = new Company();
-		Invoice invoice = new Invoice();
 		long[] recordIds = { 1L, 2L };
 		List<BillingRecord> records = Arrays.asList(new BillingRecord[] { new FlatFeeBillingRecord(), new RateBasedBillingRecord() }); 
 		when(recordRepository.findByIdIn(recordIds)).thenReturn(records);
 		when(companyRepository.findOne(3L)).thenReturn(company);
 		
-		String actual = controller.createInvoice(invoice, 3L, recordIds, authentication);
+		InvoiceView InvoiceView = new InvoiceView("test invoice", recordIds);
 		
-		assertThat(actual).isEqualTo("redirect:/invoices");
+		Invoice invoice = controller.createInvoice(InvoiceView, 3L, authentication);
+		
 		verify(authentication).getPrincipal();
 		verify(recordRepository).findByIdIn(recordIds);
 		verify(companyRepository).findOne(3L);

@@ -1,6 +1,7 @@
 package com.ally.invoicify.configuration;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -23,13 +24,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http	
 			.authorizeRequests()
-				.antMatchers("/", "/css/**", "/js/**", "/signup").permitAll()
-				.antMatchers("/invoices/**").hasAnyRole("ADMIN", "ACCOUNTANT")
-				.antMatchers("/billing-records/**").hasAnyRole("ADMIN", "CLERK")
-				.antMatchers("/admin/**").hasRole("ADMIN")
-				.anyRequest().authenticated()
-			.and()
-			.formLogin();
+				.antMatchers(HttpMethod.PUT, "/api/session").permitAll()	
+				.antMatchers(HttpMethod.OPTIONS).permitAll()
+				.anyRequest().permitAll()
+				.and()
+				.csrf().disable();
 	}
 	
 	@Bean
@@ -42,22 +41,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		return userDetailsService;
 	}
 	
+	
+	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

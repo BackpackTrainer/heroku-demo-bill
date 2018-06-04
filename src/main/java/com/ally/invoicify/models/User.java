@@ -1,23 +1,21 @@
 package com.ally.invoicify.models;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
+import java.util.Collection;
+
+
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
 @Table(name="invoicify_user")
@@ -29,31 +27,24 @@ public class User implements UserDetails {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
+	@JsonProperty(access = Access.WRITE_ONLY)
 	@Column(nullable=false)
 	private String password;
 	
 	@Column(nullable=false, unique=true)
 	private String username;
 	
-	@OneToMany(fetch=FetchType.EAGER, mappedBy="user", cascade=CascadeType.ALL)
-	private List<UserRole> roles;
-	
 	public User() {}
 	
-	public User(String username, String password, String roleName) {
+	public User(String username, String password) {
 		this.username = username;
 		this.password = password;
-		
-		roles = new ArrayList<UserRole>();
-		roles.add(new UserRole(roleName, this));
 	}
 
+	@JsonIgnore
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return roles.stream()
-			.map(userRole -> "ROLE_" + userRole.getName())
-			.map(roleName -> new SimpleGrantedAuthority(roleName))
-			.collect(Collectors.toList());
+		return null;
 	}
 
 	@Override
@@ -100,14 +91,6 @@ public class User implements UserDetails {
 
 	public void setUsername(String username) {
 		this.username = username;
-	}
-
-	public List<UserRole> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(List<UserRole> roles) {
-		this.roles = roles;
 	}
 
 }
