@@ -18,16 +18,16 @@ public class UserTests {
 
 	@Before
 	public void setup() {
-		user = new User("curtis", "password", "ADMIN");
+		user = new User("curtis", "password");
 	}
 	
-	@Test
-	public void test_getAuthorities_returns_proper_authorities() {
-		List<? extends GrantedAuthority> actual = user.getAuthorities().stream().collect(Collectors.toList());
-		
-		assertThat(actual).hasSize(1);
-		assertThat(actual.get(0).getAuthority()).isEqualTo("ROLE_ADMIN");
-	}
+//	@Test
+//	public void test_getAuthorities_returns_proper_authorities() {
+//		List<? extends GrantedAuthority> actual = user.getAuthorities().stream().collect(Collectors.toList());
+//		
+//		assertThat(actual).hasSize(1);
+//		assertThat(actual.get(0).getAuthority()).isEqualTo("ROLE_ADMIN");
+//	}
 
 	@Test
 	public void test_getters_and_setters() {
